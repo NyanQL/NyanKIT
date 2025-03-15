@@ -1,0 +1,6 @@
+{
+  "hello": {
+    "script": "./javascript/hello.js",
+    "description": "サンプル用です"
+  }
+}
