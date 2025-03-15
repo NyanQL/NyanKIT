@@ -1,0 +1,40 @@
+/*
+* style.css
+*/
+
+body {
+    width: 100%;
+    background-color: #65676b;
+    margin:0;
+    padding:0;
+}
+header{
+    margin:0;
+    padding:10px;
+    background-color: #FFFFFF;
+    display: block;
+    text-align: center;
+}
+header h1 {
+    padding-bottom: 8px;
+}
+main {
+    display: block;
+    margin:0;
+    padding:10px;
+    width: auto;
+    background-color: #FFFFFF;
+    min-height: 400px;
+}
+footer{
+    margin:0;
+    padding:10px;
+    text-align: right;
+    color:#FFFFFF;
+}
+
+.copyright a {
+    text-decoration: none;
+    color:#FFFFFF;
+
+}
