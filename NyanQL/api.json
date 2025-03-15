@@ -1,0 +1,6 @@
+{
+  "list": {
+    "sql": ["./sql/list.sql"],
+    "description": "当月の一覧を表示します。"
+  }
+}
