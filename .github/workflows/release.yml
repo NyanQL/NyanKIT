@@ -1,0 +1,159 @@
+name: Build, Bundle, and Release Nyan Starter Kit by OS
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+permissions:
+  contents: write
+  releases: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      # (1) スターターキット（このリポジトリ）のチェックアウト
+      - name: Check out Starter Kit repository
+        uses: actions/checkout@v4
+
+      # (2) NyanQL リポジトリを NyanQL_src フォルダにチェックアウト
+      - name: Check out NyanQL repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/NyanQL
+          path: NyanQL_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # (3) NyanPUI リポジトリを NyanPUI_src フォルダにチェックアウト
+      - name: Check out NyanPUI repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/NyanPUI
+          path: NyanPUI_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # (4) Nyan8 リポジトリを Nyan8_src フォルダにチェックアウト
+      - name: Check out Nyan8 repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/Nyan8
+          path: Nyan8_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # (5) Windowsの場合、zipコマンドを利用できるよう Chocolateyでインストール
+      - name: Install zip on Windows
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: choco install zip -y
+
+      # (6) 共通の Go セットアップ
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      # (7) NyanQL のビルド（NyanQL_src 内で実行）
+      - name: Build NyanQL binary
+        working-directory: NyanQL_src
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          go build -o NyanQL main.go
+
+      # (8) NyanPUI のビルド（NyanPUI_src 内で実行）
+      - name: Build NyanPUI binary
+        working-directory: NyanPUI_src
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          go build -o NyanPUI main.go
+
+      # (9) Nyan8 のビルド（Nyan8_src 内で実行）
+      - name: Build Nyan8 binary
+        working-directory: Nyan8_src
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          go build -o Nyan8 main.go
+
+      # (10) スターターキットと各外部リポジトリの成果物をまとめたパッケージ用フォルダを作成
+      - name: Copy built files to package folder
+        shell: bash
+        run: |
+          PACKAGE_DIR="package_${{ matrix.os }}"
+          mkdir -p "$PACKAGE_DIR"
+
+          # 現在のディレクトリ（スターターキットの全内容）のうち、PACKAGE_DIR 自体は除外してコピー
+          mkdir -p "$PACKAGE_DIR/starterkit"
+          find . -maxdepth 1 -mindepth 1 -not -name "$(basename "$PACKAGE_DIR")" -exec cp -r {} "$PACKAGE_DIR/starterkit/" \;
+
+          # NyanQL の成果物
+          mkdir -p "$PACKAGE_DIR/NyanQL"
+          cp NyanQL_src/NyanQL "$PACKAGE_DIR/NyanQL/"
+          cp NyanQL_src/README.md "$PACKAGE_DIR/NyanQL/" || true
+
+          # NyanPUI の成果物
+          mkdir -p "$PACKAGE_DIR/NyanPUI"
+          cp NyanPUI_src/NyanPUI "$PACKAGE_DIR/NyanPUI/"
+          cp NyanPUI_src/README.md "$PACKAGE_DIR/NyanPUI/" || true
+
+          # Nyan8 の成果物
+          mkdir -p "$PACKAGE_DIR/Nyan8"
+          cp Nyan8_src/Nyan8 "$PACKAGE_DIR/Nyan8/"
+          cp Nyan8_src/README.md "$PACKAGE_DIR/Nyan8/" || true
+
+      # (11) OSごとに個別の zip パッケージを作成
+      - name: Create OS-specific release package zip
+        shell: bash
+        run: |
+          PACKAGE_DIR="package_${{ matrix.os }}"
+          zip -r "Nyan_STARTER_KIT_${{ matrix.os }}.zip" "$PACKAGE_DIR" -x "*.git*"
+
+      # (12) 作成した zip ファイルをアーティファクトとしてアップロード
+      - name: Upload OS-specific release asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nyan_STARTER_KIT_${{ matrix.os }}
+          path: Nyan_STARTER_KIT_${{ matrix.os }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # 各OSごとのアーティファクトをダウンロード
+      - name: Download ubuntu artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Nyan_STARTER_KIT_ubuntu-latest
+          path: artifacts/ubuntu
+      - name: Download macos artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Nyan_STARTER_KIT_macos-latest
+          path: artifacts/macos
+      - name: Download windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Nyan_STARTER_KIT_windows-latest
+          path: artifacts/windows
+
+      # GitHub Release の作成と各OSの zip 添付
+      - name: Create GitHub Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          files: |
+            artifacts/ubuntu/Nyan_STARTER_KIT_ubuntu-latest.zip
+            artifacts/macos/Nyan_STARTER_KIT_macos-latest.zip
+            artifacts/windows/Nyan_STARTER_KIT_windows-latest.zip
+          draft: false
+          prerelease: false
