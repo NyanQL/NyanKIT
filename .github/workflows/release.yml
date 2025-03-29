@@ -1,0 +1,118 @@
+name: Build and Bundle Nyan Starter Kit by OS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      # (1) スターターキットリポジトリ（このリポジトリ）のチェックアウト
+      - name: Check out Starter Kit repository
+        uses: actions/checkout@v4
+
+      # (2) NyanQL リポジトリを NyanQL_src フォルダにチェックアウト
+      - name: Check out NyanQL repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/NyanQL
+          path: NyanQL_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # (3) NyanPUI リポジトリを NyanPUI_src フォルダにチェックアウト
+      - name: Check out NyanPUI repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/NyanPUI
+          path: NyanPUI_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # (4) Nyan8 リポジトリを Nyan8_src フォルダにチェックアウト
+      - name: Check out Nyan8 repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/Nyan8
+          path: Nyan8_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # (5) Windows環境の場合、zip コマンドが使えるように Chocolatey からインストール
+      - name: Install zip on Windows
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: choco install zip -y
+
+      # (6) Go のセットアップ（共通）
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      # (7) 各リポジトリでビルドを実施（ここでは単純な例として main.go をビルド）
+      - name: Build NyanQL binary
+        working-directory: NyanQL_src
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          go build -o NyanQL main.go
+
+      - name: Build NyanPUI binary
+        working-directory: NyanPUI_src
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          go build -o NyanPUI main.go
+
+      - name: Build Nyan8 binary
+        working-directory: Nyan8_src
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          go build -o Nyan8 main.go
+
+      # (8) 各ビルド成果物とスターターキット内の既存ファイルを、OSごとに個別のフォルダへまとめる
+      - name: Copy built files to package folder
+        shell: bash
+        run: |
+          # OSごとのパッケージ用フォルダ名（例: Nyan_STARTER_KIT_ubuntu-latest.zip）
+          PACKAGE_DIR="package_${{ matrix.os }}"
+          mkdir -p "$PACKAGE_DIR"
+
+          # スターターキットの既存ファイル・フォルダをコピー（例: 必要なもの全て）
+          # ここではスターターキットリポジトリのルートからすべてをコピーする例です
+          cp -r . "$PACKAGE_DIR"/starterkit
+
+          # 外部リポジトリのビルド成果物をそれぞれ専用のフォルダに配置
+          mkdir -p "$PACKAGE_DIR"/NyanQL
+          cp NyanQL_src/NyanQL "$PACKAGE_DIR"/NyanQL/
+          # 必要に応じて追加ファイル（例: README.mdやconfig.json）もコピー
+          cp NyanQL_src/README.md "$PACKAGE_DIR"/NyanQL/ || true
+
+          mkdir -p "$PACKAGE_DIR"/NyanPUI
+          cp NyanPUI_src/NyanPUI "$PACKAGE_DIR"/NyanPUI/
+          cp NyanPUI_src/README.md "$PACKAGE_DIR"/NyanPUI/ || true
+
+          mkdir -p "$PACKAGE_DIR"/Nyan8
+          cp Nyan8_src/Nyan8 "$PACKAGE_DIR"/Nyan8/
+          cp Nyan8_src/README.md "$PACKAGE_DIR"/Nyan8/ || true
+
+      # (9) OSごとに個別の zip パッケージを作成
+      - name: Create OS-specific release package zip
+        shell: bash
+        run: |
+          PACKAGE_DIR="package_${{ matrix.os }}"
+          zip -r "Nyan_STARTER_KIT_${{ matrix.os }}.zip" "$PACKAGE_DIR" -x "*.git*"
+
+      # (10) 作成した zip ファイルをアーティファクトとしてアップロード
+      - name: Upload OS-specific release asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nyan_STARTER_KIT_${{ matrix.os }}
+          path: Nyan_STARTER_KIT_${{ matrix.os }}.zip
