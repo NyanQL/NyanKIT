@@ -97,17 +97,25 @@ jobs:
             go build -o Nyan8 main.go
           fi
 
-      # (10) スターターキットの全内容と外部リポジトリの成果物を一時フォルダにまとめる
+      # (10) スターターキットの全内容（外部リポジトリのチェックアウトフォルダ、go.mod, go.sum, .git は除外）と外部リポジトリの成果物を一時フォルダにまとめる
       - name: Prepare package folder
         shell: bash
         run: |
           # 一時フォルダを削除して作成
           rm -rf package_temp
           mkdir package_temp
-          # 現在のディレクトリ直下の全項目のうち、package_temp と .git を除外してコピー
-          find . -maxdepth 1 -mindepth 1 -not -name 'package_temp' -not -name '.git' -exec cp -r {} package_temp/ \;
+          # スターターキットの全内容をコピー（以下のファイル・フォルダは除外）
+          find . -maxdepth 1 -mindepth 1 \
+            -not -name "package_temp" \
+            -not -name "NyanQL_src" \
+            -not -name "NyanPUI_src" \
+            -not -name "Nyan8_src" \
+            -not -name ".git" \
+            -not -name "go.mod" \
+            -not -name "go.sum" \
+            -exec cp -r {} package_temp/ \;
           
-          # 外部リポジトリの成果物をスターターキット内の各サブフォルダへ配置
+          # 外部リポジトリの成果物をスターターキット内のサブフォルダに配置
           mkdir -p package_temp/NyanQL
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             cp NyanQL_src/NyanQL.exe package_temp/NyanQL/
@@ -132,7 +140,7 @@ jobs:
           fi
           cp Nyan8_src/README.md package_temp/Nyan8/ || true
 
-      # (11) OSごとに zip パッケージを作成（解凍時にスターターキットの内容がそのまま現れる）
+      # (11) OSごとに zip パッケージを作成
       - name: Create OS-specific release package zip
         shell: bash
         run: |
