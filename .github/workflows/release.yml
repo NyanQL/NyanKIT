@@ -6,8 +6,6 @@ on:
       - 'v*.*.*'
 permissions:
   contents: write
-  releases: write
-
 jobs:
   build:
     strategy:
