@@ -40,19 +40,19 @@ jobs:
           path: Nyan8_src
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # (5) Windows環境の場合、zip コマンドが使えるように Chocolatey からインストール
+      # (5) Windowsの場合、zipコマンドが使えるように Chocolatey からインストール
       - name: Install zip on Windows
         if: matrix.os == 'windows-latest'
         shell: powershell
         run: choco install zip -y
 
-      # (6) Go のセットアップ（共通）
+      # (6) 共通の Go セットアップ
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.24'
 
-      # (7) 各リポジトリでビルドを実施（ここでは単純な例として main.go をビルド）
+      # (7) NyanQL のビルド（NyanQL_src 内で実行）
       - name: Build NyanQL binary
         working-directory: NyanQL_src
         env:
@@ -61,6 +61,7 @@ jobs:
         run: |
           go build -o NyanQL main.go
 
+      # (8) NyanPUI のビルド（NyanPUI_src 内で実行）
       - name: Build NyanPUI binary
         working-directory: NyanPUI_src
         env:
@@ -69,6 +70,7 @@ jobs:
         run: |
           go build -o NyanPUI main.go
 
+      # (9) Nyan8 のビルド（Nyan8_src 内で実行）
       - name: Build Nyan8 binary
         working-directory: Nyan8_src
         env:
@@ -77,40 +79,40 @@ jobs:
         run: |
           go build -o Nyan8 main.go
 
-      # (8) 各ビルド成果物とスターターキット内の既存ファイルを、OSごとに個別のフォルダへまとめる
+      # (10) 各ビルド成果物とスターターキット内の既存ファイルを、OSごとのパッケージフォルダにコピー
       - name: Copy built files to package folder
         shell: bash
         run: |
-          # OSごとのパッケージ用フォルダ名（例: Nyan_STARTER_KIT_ubuntu-latest.zip）
           PACKAGE_DIR="package_${{ matrix.os }}"
           mkdir -p "$PACKAGE_DIR"
 
-          # スターターキットの既存ファイル・フォルダをコピー（例: 必要なもの全て）
-          # ここではスターターキットリポジトリのルートからすべてをコピーする例です
-          cp -r . "$PACKAGE_DIR"/starterkit
+          # スターターキットの既存ファイル・フォルダをコピー（PACKAGE_DIR自体は除外）
+          mkdir -p "$PACKAGE_DIR/starterkit"
+          find . -maxdepth 1 -mindepth 1 -not -name "$(basename "$PACKAGE_DIR")" -exec cp -r {} "$PACKAGE_DIR/starterkit/" \;
 
-          # 外部リポジトリのビルド成果物をそれぞれ専用のフォルダに配置
-          mkdir -p "$PACKAGE_DIR"/NyanQL
-          cp NyanQL_src/NyanQL "$PACKAGE_DIR"/NyanQL/
-          # 必要に応じて追加ファイル（例: README.mdやconfig.json）もコピー
-          cp NyanQL_src/README.md "$PACKAGE_DIR"/NyanQL/ || true
+          # NyanQL のビルド成果物と追加ファイルをコピー
+          mkdir -p "$PACKAGE_DIR/NyanQL"
+          cp NyanQL_src/NyanQL "$PACKAGE_DIR/NyanQL/"
+          cp NyanQL_src/README.md "$PACKAGE_DIR/NyanQL/" || true
 
-          mkdir -p "$PACKAGE_DIR"/NyanPUI
-          cp NyanPUI_src/NyanPUI "$PACKAGE_DIR"/NyanPUI/
-          cp NyanPUI_src/README.md "$PACKAGE_DIR"/NyanPUI/ || true
+          # NyanPUI のビルド成果物と追加ファイルをコピー
+          mkdir -p "$PACKAGE_DIR/NyanPUI"
+          cp NyanPUI_src/NyanPUI "$PACKAGE_DIR/NyanPUI/"
+          cp NyanPUI_src/README.md "$PACKAGE_DIR/NyanPUI/" || true
 
-          mkdir -p "$PACKAGE_DIR"/Nyan8
-          cp Nyan8_src/Nyan8 "$PACKAGE_DIR"/Nyan8/
-          cp Nyan8_src/README.md "$PACKAGE_DIR"/Nyan8/ || true
+          # Nyan8 のビルド成果物と追加ファイルをコピー
+          mkdir -p "$PACKAGE_DIR/Nyan8"
+          cp Nyan8_src/Nyan8 "$PACKAGE_DIR/Nyan8/"
+          cp Nyan8_src/README.md "$PACKAGE_DIR/Nyan8/" || true
 
-      # (9) OSごとに個別の zip パッケージを作成
+      # (11) OSごとに個別の zip パッケージを作成
       - name: Create OS-specific release package zip
         shell: bash
         run: |
           PACKAGE_DIR="package_${{ matrix.os }}"
           zip -r "Nyan_STARTER_KIT_${{ matrix.os }}.zip" "$PACKAGE_DIR" -x "*.git*"
 
-      # (10) 作成した zip ファイルをアーティファクトとしてアップロード
+      # (12) 作成した zip ファイルをアーティファクトとしてアップロード
       - name: Upload OS-specific release asset
         uses: actions/upload-artifact@v4
         with:
