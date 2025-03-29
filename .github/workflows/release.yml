@@ -4,8 +4,10 @@ on:
   push:
     tags:
       - 'v*.*.*'
+
 permissions:
   contents: write
+
 jobs:
   build:
     strategy:
@@ -41,7 +43,7 @@ jobs:
           path: Nyan8_src
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # (5) Windowsの場合、zipコマンドを利用できるよう Chocolateyでインストール
+      # (5) Windowsの場合、zipコマンドを利用できるように Chocolatey からインストール
       - name: Install zip on Windows
         if: matrix.os == 'windows-latest'
         shell: powershell
@@ -56,62 +58,88 @@ jobs:
       # (7) NyanQL のビルド（NyanQL_src 内で実行）
       - name: Build NyanQL binary
         working-directory: NyanQL_src
+        shell: bash
         env:
           CGO_ENABLED: 1
           GIN_MODE: release
         run: |
-          go build -o NyanQL main.go
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            go build -o NyanQL.exe main.go
+          else
+            go build -o NyanQL main.go
+          fi
 
       # (8) NyanPUI のビルド（NyanPUI_src 内で実行）
       - name: Build NyanPUI binary
         working-directory: NyanPUI_src
+        shell: bash
         env:
           CGO_ENABLED: 1
           GIN_MODE: release
         run: |
-          go build -o NyanPUI main.go
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            go build -o NyanPUI.exe main.go
+          else
+            go build -o NyanPUI main.go
+          fi
 
       # (9) Nyan8 のビルド（Nyan8_src 内で実行）
       - name: Build Nyan8 binary
         working-directory: Nyan8_src
+        shell: bash
         env:
           CGO_ENABLED: 1
           GIN_MODE: release
         run: |
-          go build -o Nyan8 main.go
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            go build -o Nyan8.exe main.go
+          else
+            go build -o Nyan8 main.go
+          fi
 
-      # (10) スターターキットと各外部リポジトリの成果物をまとめたパッケージ用フォルダを作成
-      - name: Copy built files to package folder
+      # (10) スターターキットの全ファイルと外部リポジトリの成果物を一時フォルダにまとめる
+      - name: Prepare package folder
         shell: bash
         run: |
-          PACKAGE_DIR="package_${{ matrix.os }}"
-          mkdir -p "$PACKAGE_DIR"
+          # 一時フォルダをクリアして作成
+          rm -rf package_temp
+          mkdir package_temp
+          # スターターキットの全内容（.git除く）をコピー
+          rsync -av --exclude='.git' ./ package_temp/
 
-          # 現在のディレクトリ（スターターキットの全内容）のうち、PACKAGE_DIR 自体は除外してコピー
-          mkdir -p "$PACKAGE_DIR/starterkit"
-          find . -maxdepth 1 -mindepth 1 -not -name "$(basename "$PACKAGE_DIR")" -exec cp -r {} "$PACKAGE_DIR/starterkit/" \;
+          # 外部リポジトリの成果物を、スターターキット内のサブフォルダとして配置
+          mkdir -p package_temp/NyanQL
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cp NyanQL_src/NyanQL.exe package_temp/NyanQL/
+          else
+            cp NyanQL_src/NyanQL package_temp/NyanQL/
+          fi
+          cp NyanQL_src/README.md package_temp/NyanQL/ || true
 
-          # NyanQL の成果物
-          mkdir -p "$PACKAGE_DIR/NyanQL"
-          cp NyanQL_src/NyanQL "$PACKAGE_DIR/NyanQL/"
-          cp NyanQL_src/README.md "$PACKAGE_DIR/NyanQL/" || true
+          mkdir -p package_temp/NyanPUI
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cp NyanPUI_src/NyanPUI.exe package_temp/NyanPUI/
+          else
+            cp NyanPUI_src/NyanPUI package_temp/NyanPUI/
+          fi
+          cp NyanPUI_src/README.md package_temp/NyanPUI/ || true
 
-          # NyanPUI の成果物
-          mkdir -p "$PACKAGE_DIR/NyanPUI"
-          cp NyanPUI_src/NyanPUI "$PACKAGE_DIR/NyanPUI/"
-          cp NyanPUI_src/README.md "$PACKAGE_DIR/NyanPUI/" || true
+          mkdir -p package_temp/Nyan8
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cp Nyan8_src/Nyan8.exe package_temp/Nyan8/
+          else
+            cp Nyan8_src/Nyan8 package_temp/Nyan8/
+          fi
+          cp Nyan8_src/README.md package_temp/Nyan8/ || true
 
-          # Nyan8 の成果物
-          mkdir -p "$PACKAGE_DIR/Nyan8"
-          cp Nyan8_src/Nyan8 "$PACKAGE_DIR/Nyan8/"
-          cp Nyan8_src/README.md "$PACKAGE_DIR/Nyan8/" || true
-
-      # (11) OSごとに個別の zip パッケージを作成
+      # (11) OSごとに zip パッケージを作成（スターターキットの内容そのものを zip 化）
       - name: Create OS-specific release package zip
         shell: bash
         run: |
-          PACKAGE_DIR="package_${{ matrix.os }}"
-          zip -r "Nyan_STARTER_KIT_${{ matrix.os }}.zip" "$PACKAGE_DIR" -x "*.git*"
+          cd package_temp
+          # 現在のフォルダ内の全ファイル・フォルダを zip するので、解凍するとスターターキットの内容がそのまま出る
+          zip -r "../Nyan_STARTER_KIT_${{ matrix.os }}.zip" .
+          cd ..
 
       # (12) 作成した zip ファイルをアーティファクトとしてアップロード
       - name: Upload OS-specific release asset
