@@ -2,8 +2,8 @@ name: Build and Bundle Nyan Starter Kit by OS
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
