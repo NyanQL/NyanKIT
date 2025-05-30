@@ -16,9 +16,9 @@ https://github.com/NyanQL/Nyan_STARTER_KIT/releases
 * NyanPUI https://github.com/NyanQL/NyanPUI/
 
 現在のバイナリの各バージョンは以下の通りです。
-* NyanQL v0.0.11
-* Nyan8 v0.0.9
-* NyanPUI v0.0.5
+* NyanQL v0.0.12
+* Nyan8 v0.0.10
+* NyanPUI v0.0.7
 
 
 # ライセンス
