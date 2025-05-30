@@ -131,7 +131,7 @@ jobs:
             cp NyanPUI_src/NyanPUI package_temp/NyanPUI/
           fi
           cp NyanPUI_src/html/css/wf_style.css package_temp/NyanPUI/html/css/
-          cp -r NyanPUI_src/html/javascript/lib package_temp/NyanPUI/javascript/lib
+          cp -r NyanPUI_src/javascript/lib package_temp/NyanPUI/javascript/lib
           cp NyanPUI_src/README.md package_temp/NyanPUI/ || true
 
           mkdir -p package_temp/Nyan8
