@@ -127,11 +127,11 @@ jobs:
           mkdir -p package_temp/NyanPUI
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             cp NyanPUI_src/NyanPUI.exe package_temp/NyanPUI/
-            cp NyanPUI_src/html/css/wf_style.css package_temp/NyanPUI/html/css/
-            cp -r NyanPUI_src/html/javascript/lib package_temp/NyanPUI/javascript/lib
           else
             cp NyanPUI_src/NyanPUI package_temp/NyanPUI/
           fi
+          cp NyanPUI_src/html/css/wf_style.css package_temp/NyanPUI/html/css/
+          cp -r NyanPUI_src/html/javascript/lib package_temp/NyanPUI/javascript/lib
           cp NyanPUI_src/README.md package_temp/NyanPUI/ || true
 
           mkdir -p package_temp/Nyan8
