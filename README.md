@@ -16,11 +16,11 @@ https://github.com/NyanQL/Nyan_STARTER_KIT/releases
 * NyanPUI https://github.com/NyanQL/NyanPUI/
 
 現在のバイナリの各バージョンは以下の通りです。
-* NyanQL v0.0.12
-* Nyan8 v0.0.10
-* NyanPUI v0.0.7
+* NyanQL v0.0.13
+* Nyan8 v0.0.11
+* NyanPUI v0.0.8
 
 
 # ライセンス
-Nyan_STARTER_KIT(にゃんスターターキット)はMITライセンスで提供されています。詳細は[LICENSE.md](LICENSE.md)を参照してください。
+Nyan_STARTER_KIT(にゃんスターターキット)はMITライセンスで提供されています。詳細は[LICENSE.md](https://github.com/NyanQL/Nyan_STARTER_KIT/blob/main/LICENSE.md)を参照してください。
 
