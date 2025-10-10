@@ -147,15 +147,15 @@ jobs:
         shell: bash
         run: |
           cd package_temp
-          zip -r "../Nyan_STARTER_KIT_${{ matrix.os }}.zip" .
+          zip -r "../NyanKIT_${{ matrix.os }}.zip" .
           cd ..
 
       # (12) 作成した zip ファイルをアーティファクトとしてアップロード
       - name: Upload OS-specific release asset
         uses: actions/upload-artifact@v4
         with:
-          name: Nyan_STARTER_KIT_${{ matrix.os }}
-          path: Nyan_STARTER_KIT_${{ matrix.os }}.zip
+          name: NyanKIT_${{ matrix.os }}
+          path: NyanKIT_${{ matrix.os }}.zip
 
   release:
     needs: build
@@ -165,17 +165,17 @@ jobs:
       - name: Download ubuntu artifact
         uses: actions/download-artifact@v4
         with:
-          name: Nyan_STARTER_KIT_ubuntu-latest
+          name: NyanKIT_ubuntu-latest
           path: artifacts/ubuntu
       - name: Download macos artifact
         uses: actions/download-artifact@v4
         with:
-          name: Nyan_STARTER_KIT_macos-latest
+          name: NyanKIT_macos-latest
           path: artifacts/macos
       - name: Download windows artifact
         uses: actions/download-artifact@v4
         with:
-          name: Nyan_STARTER_KIT_windows-latest
+          name: NyanKIT_windows-latest
           path: artifacts/windows
 
       # GitHub Release の作成と各OSの zip 添付
@@ -187,8 +187,8 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: "Release ${{ github.ref_name }}"
           files: |
-            artifacts/ubuntu/Nyan_STARTER_KIT_ubuntu-latest.zip
-            artifacts/macos/Nyan_STARTER_KIT_macos-latest.zip
-            artifacts/windows/Nyan_STARTER_KIT_windows-latest.zip
+            artifacts/ubuntu/NyanKIT_ubuntu-latest.zip
+            artifacts/macos/NyanKIT_macos-latest.zip
+            artifacts/windows/NyanKIT_windows-latest.zip
           draft: false
           prerelease: false
