@@ -31,5 +31,5 @@ NyanQLアプリはNyanQLを中心としたNyanQLエンジンで構成された�
 
 
 # ライセンス
-Nyan_STARTER_KIT(にゃんスターターキット)はMITライセンスで提供されています。詳細は[LICENSE.md](https://github.com/NyanQL/NyanKIT/blob/main/LICENSE.md)を参照してください。
+NyanKIT(にゃんスターターキット)はMITライセンスで提供されています。詳細は[LICENSE.md](https://github.com/NyanQL/NyanKIT/blob/main/LICENSE.md)を参照してください。
 
