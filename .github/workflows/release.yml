@@ -43,6 +43,22 @@ jobs:
           path: Nyan8_src
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # (4.5) NyanTest4SQL リポジトリを NyanTest4SQL_src フォルダにチェックアウト
+      - name: Check out NyanTest4SQL repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/NyanTest4SQL
+          path: NyanTest4SQL_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # (4.7) NyanTest4JS リポジトリを NyanTest4JS_src フォルダにチェックアウト
+      - name: Check out NyanTest4JS repository
+        uses: actions/checkout@v4
+        with:
+          repository: NyanQL/NyanTest4JS
+          path: NyanTest4JS_src
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       # (5) Windowsの場合、zipコマンドを利用できるように Chocolatey からインストール
       - name: Install zip on Windows
         if: matrix.os == 'windows-latest'
@@ -96,6 +112,36 @@ jobs:
           else
             go build -o Nyan8 main.go
           fi
+
+      # (9.5) NyanTest4SQL のビルド（NyanTest4SQL_src 内で実行し tests/sql に配置）
+      - name: Build NyanTest4SQL test binary
+        working-directory: NyanTest4SQL_src
+        shell: bash
+        env:
+          CGO_ENABLED: 1
+        run: |
+          mkdir -p ../tests/sql
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            go build -o ../tests/sql/NyanTest4SQL.exe main.go
+          else
+            go build -o ../tests/sql/NyanTest4SQL main.go
+          fi
+          cp README.md ../tests/sql/README.md
+
+      # (9.7) NyanTest4JS のビルド（NyanTest4JS_src 内で実行し tests/js に配置）
+      - name: Build NyanTest4JS test binary
+        working-directory: NyanTest4JS_src
+        shell: bash
+        env:
+          CGO_ENABLED: 1
+        run: |
+          mkdir -p ../tests/js
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            go build -o ../tests/js/NyanTest4JS.exe main.go
+          else
+            go build -o ../tests/js/NyanTest4JS main.go
+          fi
+          cp README.md ../tests/js/README.md
 
       # (10) スターターキットの全内容（外部リポジトリのチェックアウトフォルダ、go.mod, go.sum, .git は除外）と外部リポジトリの成果物を一時フォルダにまとめる
       - name: Prepare package folder

@@ -29,7 +29,12 @@ NyanQLアプリはNyanQLを中心としたNyanQLエンジンで構成された�
 * Nyan8 v0.0.12
 * NyanPUI v0.0.8
 
+# 同梱されるテストツール
+リリースZIPには以下のCLIテストツールも含まれます（OSごとのバイナリと README を同梱）。
+* tests/sql/NyanTest4SQL … SQLテンプレートの自動テスト用ツール
+* tests/js/NyanTest4JS … JavaScriptロジックのテスト用ツール
+詳しい使い方はそれぞれのフォルダ内にある README.md を参照してください。
+
 
 # ライセンス
 NyanKIT(にゃんスターターキット)はMITライセンスで提供されています。詳細は[LICENSE.md](https://github.com/NyanQL/NyanKIT/blob/main/LICENSE.md)を参照してください。
-
