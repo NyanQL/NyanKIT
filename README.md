@@ -25,9 +25,9 @@ NyanQLアプリはNyanQLを中心としたNyanQLエンジンで構成された�
 * NyanPUI https://github.com/NyanQL/NyanPUI/
 
 現在のバイナリの各バージョンは以下の通りです。
-* NyanQL v0.0.14
+* NyanQL v0.0.16
 * Nyan8 v0.0.13
-* NyanPUI v0.0.8
+* NyanPUI v0.0.9
 
 # 同梱されるテストツール
 リリースZIPには以下のCLIテストツールも含まれます（OSごとのバイナリと README を同梱）。
