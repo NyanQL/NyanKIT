@@ -75,6 +75,9 @@ jobs:
           mkdir -p release_package
           cp README.md LICENSE.md init.sql release_package/
           cp -R NyanQL Nyan8 NyanPUI release_package/
+          cp NyanQL_src/README.md release_package/NyanQL/
+          cp Nyan8_src/README.md release_package/Nyan8/
+          cp NyanPUI_src/README.md release_package/NyanPUI/
 
           (cd NyanQL_src && go build -ldflags "-X main.buildVersion=${NYANQL_REF}" -o "../release_package/NyanQL/NyanQL${ext}" main.go)
           (cd Nyan8_src && go build -ldflags "-X main.BinaryVersion=${NYAN8_REF}" -o "../release_package/Nyan8/Nyan8${ext}" main.go)
