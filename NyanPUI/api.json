@@ -1,6 +1,52 @@
 {
   "html": {
+    "script": "./javascript/html.js",
     "html": "./html/index.html",
     "description": "トップページです"
+  },
+  "wf": {
+    "html": "./html/wf_html.html",
+    "description": "ワイヤーフレームCSSを当てたHTMLサンプルです。"
+  },
+ "push/request": {
+   "script": "./javascript/html.js",
+   "html": "./html/push/request.html",
+   "description": "リクエストする",
+   "push": "push/receive"
+ },
+  "push/receive": {
+    "script": "./javascript/receive.js",
+    "html": "./html/push/receive.html",
+    "description": "websocketでここに接続しておくと、push/requestにリクエストがあるとpushを受信することができるよ"
+  },
+  "ws_client/self_push_receive": {
+    "type": "ws_client",
+    "connectURL": "ws://127.0.0.1:8009/push/receive",
+    "script": "./javascript/ws/receiver_main.js",
+    "description": "NyanPUI自身のWebSocket(push/receive)に接続して受信ログを出すサンプル"
+  },
+  "push/test": {
+    "html": "./html/push/test.html",
+    "description": "websocketを試すことができるページ"
+  },
+  "plate": {
+    "script": "./javascript/plate.js",
+    "html": "./html/plateSample.html",
+    "description": "nyanPlateのサンプルページ"
+  },
+  "plate_decode": {
+    "script": "./javascript/plateDecode.js",
+    "html": "./html/plateDecodeSample.html",
+    "description": "nyanPlateのHTMLからjsonを作成するサンプルページ"
+  },
+  "sample/json": {
+    "script": "./javascript/sample_json.js",
+    "html": "",
+    "description": "JSONを返すサンプルAPI"
+  },
+  "sample/png": {
+    "script": "./javascript/sample_png.js",
+    "html": "",
+    "description": "nyan.pngをバイナリで返すサンプルAPI"
   }
 }

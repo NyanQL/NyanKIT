@@ -1,0 +1,1 @@
+INSERT INTO test VALUES (3, 'にゃん3'), (4, 'にゃんにゃん4');
