@@ -1,2 +1,3 @@
-
-console.log("loaded base.js");
+/**
+ * 共通処理や設定を記載するjsファイル
+ */

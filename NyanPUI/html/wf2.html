@@ -1,0 +1,78 @@
+<html>
+<html lang="ja">
+<head>
+    <title>NyanPUI</title>
+    <!--  cssの設定 -->
+    <link href="/css/wf_style.css?time=1111" rel="stylesheet" type="text/css" media="all">
+<body>
+
+<header class="wf-header">収納管理-CSVアップロード</header>
+
+<form>
+    <div class="wf-upload-box">
+        <div class="wf-upload">
+            <label for="fileUpload" class="wf-file-label">ファイルを選択</label>
+            <input type="file" id="fileUpload">
+            <a class="wf-button">アップロード</a>
+        </div>
+        <div class="center red">エラーが発生しました: </div>
+
+    </div>
+</form>
+
+<div class="pager">
+    <a href="#">前へ</a>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="#">次へ</a>
+</div>
+
+<div class="wf-table-box">
+    <table>
+        <thead>
+        <tr>
+            <th class="col-auto">ファイル名</th>
+            <th class="col-3">ファイル種別</th>
+            <th class="col-1">処理状況</th>
+            <th class="col-2">アップロード時刻</th>
+            <th class="col-2">登録完了時刻</th>
+        </tr>
+        </thead>
+        <tr>
+            <td>DiDi 注文情報一覧のコピー.csv</td>
+            <td>DiDi 注文情報一覧</td>
+            <td>登録処理中</td>
+            <td>2025-05-02 16:08</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>クレジット・デビット.csv</td>
+            <td>クレジット・デビット利用明細</td>
+            <td>登録済</td>
+            <td>2025-03-04 17:17</td>
+            <td>2025-03-04 17:17</td>
+        </tr>
+        <tr>
+            <td>GO QRコード未収管理.csv</td>
+            <td>GO QRコード未収管理</td>
+            <td>登録済</td>
+            <td>2025-02-27 17:00</td>
+            <td>2025-02-27 17:00</td>
+        </tr>
+    </table>
+</div>
+
+<div class="pager">
+    <a href="#">前へ</a>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="#">次へ</a>
+</div>
+
+<footer class="wf-footer">
+    footer
+</footer>
+</body>
+</html>
