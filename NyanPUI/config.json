@@ -1,6 +1,6 @@
 {
   "name": "にゃんぷい",
-  "profile": "なんぷいの説明",
+  "profile": "にゃんぷいの説明です。",
   "version": "0.0.1",
   "Port": 8009,
   "certPath": "",
@@ -16,6 +16,21 @@
     "MaxBackups": 3,
     "MaxAge": 7,
     "Compress": true,
-    "EnableLogging": false
+    "EnableLogging": false,
+    "Level": "info"
+  },
+  "httpTimeouts": {
+    "readHeaderTimeout": "30s",
+    "readTimeout": "20m",
+    "writeTimeout": "30m",
+    "idleTimeout": "5m"
+  },
+  "receiveLimits": {
+    "httpBodyBytes": "20MB",
+    "webSocketMessageBytes": "20MB"
+  },
+  "APIHotReload": {
+    "Enabled": true,
+    "Interval": "1s"
   }
 }

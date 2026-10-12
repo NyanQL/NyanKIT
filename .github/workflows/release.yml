@@ -9,10 +9,10 @@ permissions:
   contents: write
 
 env:
-  # version up したらここを更新する
-  NYANQL_REF: v0.0.20
-  NYAN8_REF: v0.0.17
-  NYANPUI_REF: v0.0.14
+  # version up したら README.md とあわせてここを更新する
+  NYANQL_REF: v0.0.22
+  NYAN8_REF: v0.0.20
+  NYANPUI_REF: v0.0.16
 
 jobs:
   build:
@@ -57,7 +57,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.26.3'
+          go-version-file: NyanQL_src/go.mod
+          cache-dependency-path: |
+            NyanQL_src/go.sum
+            Nyan8_src/go.sum
+            NyanPUI_src/go.sum
 
       - name: Build and Package Starter Kit
         shell: bash
@@ -95,6 +99,7 @@ jobs:
         with:
           name: ${{ matrix.os }}-starter-package
           path: NyanKIT_${{ github.ref_name }}_${{ matrix.os }}.zip
+          if-no-files-found: error
 
   release:
     needs: build
@@ -127,5 +132,6 @@ jobs:
             artifacts/linux/NyanKIT_${{ github.ref_name }}_ubuntu-latest.zip
             artifacts/macos/NyanKIT_${{ github.ref_name }}_macos-latest.zip
             artifacts/windows/NyanKIT_${{ github.ref_name }}_windows-latest.zip
+          fail_on_unmatched_files: true
           draft: false
           prerelease: false

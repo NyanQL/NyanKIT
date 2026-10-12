@@ -28,11 +28,29 @@ NyanQLアプリはNyanQLを中心としたNyanQLエンジンで構成された�
 * NyanPUI https://github.com/NyanQL/NyanPUI/
 
 現在のバイナリの各バージョンは以下の通りです。
-* NyanQL v0.0.20
-* Nyan8 v0.0.17
-* NyanPUI v0.0.14
+* NyanQL v0.0.22
+* Nyan8 v0.0.20
+* NyanPUI v0.0.16
 
-リリース時には、各サブディレクトリの実行バイナリと README.md を上記リポジトリの指定バージョンから取得して同梱します。
+リリース時には、上記リポジトリの指定バージョンのソースから実行バイナリをビルドし、同じバージョンの README.md を各サブディレクトリに同梱します。各サブディレクトリの README.md は、このスターターキットのリポジトリでは管理しません。
+
+# サンプル設定
+
+各製品の `config.json` は同梱サンプル用です。NyanQL はポート `8443`、Nyan8 は `8889`、NyanPUI は `8009` を使います。`certPath` / `keyPath` が空なので、接続には `http://localhost:ポート番号` を使用します。NyanQL のHTTP APIのBasic認証はユーザー名 `neko`、パスワード `nyan` です。
+
+3製品に共通する設定として、以下の既定値を明記しています。
+
+| 設定 | サンプルの値と動作 |
+| --- | --- |
+| `log.Level` | `info`。JavaScriptの `console.log` やWebSocket受信の詳細を確認するときは `debug` に変更します。 |
+| `log.EnableLogging` | `false` は標準エラーへ出力します。`true` にすると `log.Filename` のファイルへ出力します。 |
+| `httpTimeouts` | ヘッダー受信30秒、リクエスト読み取り20分、レスポンス書き込み30分、アイドル5分。 |
+| `receiveLimits` | HTTP本文とWebSocketメッセージをそれぞれ20MBまで受信します。 |
+| `APIHotReload` | `api.json` とそのinclude先の変更を1秒間隔で確認し、再読み込みします。 |
+
+`config.json` の変更は再起動後に反映されます。`version` はサービスの表示用設定値なので、バイナリのバージョンとは別に `0.0.1` としています。Nyan8のメール送信を試す場合は、`smtp` に利用するサーバーと送信者情報を設定してください。BCCを使わない場合は `default_bcc` を空配列にします。
+
+NyanQLの `/test1` はチェック専用サンプルのため、`/test1?nyan_mode=checkOnly` で実行します（この呼び出しではPushは送信しません）。
 
 # ライセンス
 NyanKIT(にゃんスターターキット)はMITライセンスで提供されています。詳細は[LICENSE.md](https://github.com/NyanQL/Nyan_STARTER_KIT/blob/main/LICENSE.md)を参照してください。
