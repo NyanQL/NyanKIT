@@ -10,9 +10,9 @@ permissions:
 
 env:
   # version up したら README.md とあわせてここを更新する
-  NYANQL_REF: v0.0.22
-  NYAN8_REF: v0.0.20
-  NYANPUI_REF: v0.0.16
+  NYANQL_REF: v1.0.23
+  NYAN8_REF: v1.0.21
+  NYANPUI_REF: v1.0.17
 
 jobs:
   build:
